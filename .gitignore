@@ -1,0 +1,60 @@
+# Ignore build and output folders
+bin/
+obj/
+out/
+Debug/
+Release/
+
+# Visual Studio specific
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Dotnet specific
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Logs and temp files
+*.log
+*.tlog
+*.tmp
+*.temp
+*.pid
+
+# OS generated files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# Publish output
+wwwroot/lib/
+publish/
+
+# User secrets
+secrets.json
+
+# Coverage and analysis
+coverage/
+*.coverage
+*.coveragexml
+TestResult.xml
+TestResults/
+
+# Docker-related
+*.tar
+*.bak
+*.swp
+docker-compose.override.yml
+
+# JetBrains IDEs
+.idea/
+*.iml
+
+# Others
+node_modules/
+
