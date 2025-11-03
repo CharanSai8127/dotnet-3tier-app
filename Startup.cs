@@ -1,9 +1,11 @@
+using System.IO;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.DataProtection; // Added for Data Protection
 using DotNetMongoCRUDApp.Models;
 using DotNetMongoCRUDApp.Services;
 
@@ -29,6 +31,11 @@ namespace DotNetMongoCRUDApp
             services.AddSingleton<ProductService>();
 
             services.AddControllersWithViews();
+
+            // Configure Data Protection to persist keys outside container
+            services.AddDataProtection()
+                .PersistKeysToFileSystem(new DirectoryInfo(@"/home/appuser/.aspnet/DataProtection-Keys"))
+                .SetApplicationName("DotNetMongoCRUDApp");
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
