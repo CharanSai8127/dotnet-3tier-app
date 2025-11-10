@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: dotnetmongocrudapp-service
+  namespace: default
+  labels:
+    app: dotnetmongocrudapp
+spec:
+  selector:
+    app: dotnetmongocrudapp
+  ports:
+  - protocol: TCP
+    port: 80       
+    targetPort: 80 
+  type: ClusterIP  

@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dotnetmongocrudapp
+  namespace: default
+  labels:
+    app: dotnetmongocrudapp
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: dotnetmongocrudapp
+  template:
+    metadata:
+      labels:
+        app: dotnetmongocrudapp
+    spec:
+      serviceAccountName: dotnet-sa
+      containers:
+      - name: dotnetmongocrudapp
+        image: charansait372/dotnet-proj:latest
+        ports:
+        - containerPort: 80
+        env:
+        - name: ASPNETCORE_URLS
+          value: "http://+:80"
+        - name: ASPNETCORE_ENVIRONMENT
+          value: "Production"
+        - name: ConnectionStrings__CoreDB
+          valueFrom:
+            secretKeyRef:
+              name: db-connection-string-secret
+              key: ConnectionStrings__CoreDB
