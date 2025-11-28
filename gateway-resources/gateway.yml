@@ -1,27 +1,26 @@
-apiVersion: gateway.networking.k8s.io/v1alpha2
+apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
   name: nginx-gateway
-  namespace: default
+  namespace: nginx-gateway
 spec:
   gatewayClassName: nginx
   listeners:
-  - name: http
-    protocol: HTTP
-    port: 80
-    allowedRoutes:
-      namespaces:
-        from: All
-  - name: https
-    protocol: HTTPS
-    port: 443
-    tls:
-      mode: Terminate
-      certificateRefs:
-      - kind: Secret
-        name: nginx-gateway-tls-secret
-        group: ""
-    allowedRoutes:
-      namespaces:
-        from: All
+    - name: http
+      protocol: HTTP
+      port: 80
+      allowedRoutes:
+        namespaces:
+          from: All
 
+    - name: https
+      protocol: HTTPS
+      port: 443
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: nginx-gateway-tls-secret
+            kind: Secret
+      allowedRoutes:
+        namespaces:
+          from: All
