@@ -29,5 +29,5 @@ spec:
         - name: ConnectionStrings__CoreDB
           valueFrom:
             secretKeyRef:
-              name: db-connection-string-secret
-              key: ConnectionStrings__CoreDB
+              name: sql-connection
+              key: connectionString
