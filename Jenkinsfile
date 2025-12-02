@@ -64,7 +64,7 @@ pipeline {
             }
         }
 
-        stage('Trivy Scan (Source)') {
+        stage('Trivy Scan Source') {
             steps {
                 sh '''
                 trivy fs . --exit-code 0 --severity HIGH,CRITICAL --format table --scanners vuln > trivy-source-report.txt
@@ -72,25 +72,22 @@ pipeline {
             }
         }
 
-        stage('Docker Build & Tag') {
+        stage('Docker Build and Tag') {
             steps {
                 withCredentials([usernamePassword(credentialsId: "${DOCKERHUB_CRED}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     sh '''
-                    echo "🔹 Logging in to Docker Hub..."
                     docker login -u "$DOCKER_USER" -p "$DOCKER_PASS"
-
-                    echo "🔹 Building Docker image..."
-                    docker build -t ${DOCKER_USER}/dotnet-proj:${BUILD_NUMBER} .
-                    docker tag ${DOCKER_USER}/dotnet-proj:${BUILD_NUMBER} ${DOCKER_USER}/dotnet-proj:latest
+                    docker build -t ${DOCKER_USER}/dotnet-proj:v2 .
+                    docker tag ${DOCKER_USER}/dotnet-proj:v2 ${DOCKER_USER}/dotnet-proj:latest
                     '''
                 }
             }
         }
 
-        stage('Trivy Scan (Image)') {
+        stage('Trivy Scan Image') {
             steps {
                 sh '''
-                trivy image ${DOCKER_USER}/dotnet-proj:latest --exit-code 0 --severity HIGH,CRITICAL --format table > trivy-image-report.txt
+                trivy image ${DOCKER_USER}/dotnet-proj:v2 --exit-code 0 --severity HIGH,CRITICAL --format table > trivy-image-report.txt
                 '''
             }
         }
@@ -99,21 +96,17 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: "${DOCKERHUB_CRED}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     sh '''
-                    echo "🔹 Logging in to Docker Hub..."
                     docker login -u "$DOCKER_USER" -p "$DOCKER_PASS"
-
-                    echo "🔹 Pushing image to Docker Hub..."
-                    docker push ${DOCKER_USER}/dotnet-proj:${BUILD_NUMBER}
+                    docker push ${DOCKER_USER}/dotnet-proj:v2
                     docker push ${DOCKER_USER}/dotnet-proj:latest
                     '''
                 }
             }
         }
-    }
+    }   
 
     post {
         always {
-            echo '✅ CI Pipeline execution completed.'
             archiveArtifacts artifacts: '**/dependency-check-report.xml, trivy-*.txt', onlyIfSuccessful: true
             sh 'docker logout || true'
         }
