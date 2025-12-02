@@ -12,7 +12,7 @@
     <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.2" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="8.0.0" />
     <PackageReference Include="MongoDB.Driver" Version="2.28.0" />
-    <PackageReference Include="Prometheus.AspNetCore" Version="8.1.0" />
+    <PackageReference Include="prometheus-net.AspNetCore" Version="8.1.0" />
   </ItemGroup>
 
 </Project>
