@@ -4,7 +4,6 @@ pipeline {
     environment {
         SCANNER_HOME = tool 'sonar-scanner'
         SONAR_ENV = 'sonar'
-        DOCKER_TOOL = 'docker'
         DOCKERHUB_CRED = 'docker-cred'
         DOCKER_USER = 'charansait372'
         SONAR_TOKEN = credentials('sonar-token')
@@ -41,8 +40,6 @@ pipeline {
             steps {
                 withSonarQubeEnv("${SONAR_ENV}") {
                     sh '''
-                    export PATH="$PATH:/var/lib/jenkins/.dotnet/tools"
-
                     dotnet-sonarscanner begin \
                         /k:"DotNetMongoCRUDApp" \
                         /d:sonar.host.url="${SONAR_HOST_URL}" \
@@ -77,20 +74,15 @@ pipeline {
 
         stage('Docker Build & Tag') {
             steps {
-                script {
-                    def dockerHome = tool name: "${DOCKER_TOOL}", type: 'org.jenkinsci.plugins.docker.commons.tools.DockerTool'
-                    env.PATH = "${dockerHome}/bin:${env.PATH}"
+                withCredentials([usernamePassword(credentialsId: "${DOCKERHUB_CRED}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh '''
+                    echo "🔹 Logging in to Docker Hub..."
+                    docker login -u "$DOCKER_USER" -p "$DOCKER_PASS"
 
-                    withCredentials([usernamePassword(credentialsId: "${DOCKERHUB_CRED}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                        sh '''
-                        echo "🔹 Logging in to Docker Hub..."
-                        docker login -u "$DOCKER_USER" -p "$DOCKER_PASS"
-
-                        echo "🔹 Building Docker image..."
-                        docker build -t ${DOCKER_USER}/dotnet-proj:${BUILD_NUMBER} .
-                        docker tag ${DOCKER_USER}/dotnet-proj:${BUILD_NUMBER} ${DOCKER_USER}/dotnet-proj:latest
-                        '''
-                    }
+                    echo "🔹 Building Docker image..."
+                    docker build -t ${DOCKER_USER}/dotnet-proj:${BUILD_NUMBER} .
+                    docker tag ${DOCKER_USER}/dotnet-proj:${BUILD_NUMBER} ${DOCKER_USER}/dotnet-proj:latest
+                    '''
                 }
             }
         }
@@ -105,20 +97,15 @@ pipeline {
 
         stage('Docker Push') {
             steps {
-                script {
-                    def dockerHome = tool name: "${DOCKER_TOOL}", type: 'org.jenkinsci.plugins.docker.commons.tools.DockerTool'
-                    env.PATH = "${dockerHome}/bin:${env.PATH}"
+                withCredentials([usernamePassword(credentialsId: "${DOCKERHUB_CRED}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh '''
+                    echo "🔹 Logging in to Docker Hub..."
+                    docker login -u "$DOCKER_USER" -p "$DOCKER_PASS"
 
-                    withCredentials([usernamePassword(credentialsId: "${DOCKERHUB_CRED}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                        sh '''
-                        echo "🔹 Logging in to Docker Hub..."
-                        docker login -u "$DOCKER_USER" -p "$DOCKER_PASS"
-
-                        echo "🔹 Pushing image to Docker Hub..."
-                        docker push ${DOCKER_USER}/dotnet-proj:${BUILD_NUMBER}
-                        docker push ${DOCKER_USER}/dotnet-proj:latest
-                        '''
-                    }
+                    echo "🔹 Pushing image to Docker Hub..."
+                    docker push ${DOCKER_USER}/dotnet-proj:${BUILD_NUMBER}
+                    docker push ${DOCKER_USER}/dotnet-proj:latest
+                    '''
                 }
             }
         }
@@ -132,4 +119,3 @@ pipeline {
         }
     }
 }
-
