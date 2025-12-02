@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Options;
 using DotNetMongoCRUDApp.Models;
 using DotNetMongoCRUDApp.Services;
-using Prometheus; // <-- Add this
+using Prometheus;  // <-- REQUIRED for Prometheus
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,9 +33,11 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-// 🔥 PROMETHEUS MIDDLEWARE HERE
-app.UseHttpMetrics();        // Collect per-request metrics
-app.MapMetrics("/metrics");  // Expose metrics endpoint
+// --------------------------------------
+// 🔥 PROMETHEUS MIDDLEWARE (CORRECT ORDER)
+// --------------------------------------
+app.UseHttpMetrics();        // Must be BEFORE endpoints
+app.MapMetrics("/metrics");  // Exposes metrics endpoint
 
 app.UseAuthorization();
 
