@@ -18,7 +18,7 @@ spec:
       serviceAccountName: dotnet-sa
       containers:
       - name: dotnetmongocrudapp
-        image: charansait372/dotnet-proj:latest
+        image: charansait372/dotnet-proj:v2
         ports:
         - containerPort: 80
         env:
