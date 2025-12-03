@@ -2,32 +2,31 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copy only the project file and restore dependencies first to cache
+# Copy project file first (enables better layer caching)
 COPY ["DotNetMongoCRUDApp.csproj", "./"]
 RUN dotnet restore "DotNetMongoCRUDApp.csproj"
 
-# Copy the rest of the source code and publish the app
+# Copy the remaining source and publish
 COPY . .
 RUN dotnet publish "DotNetMongoCRUDApp.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
-# Stage 2: Build runtime image
+# Stage 2: Runtime image
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
 
-# Create non-root user and set permissions for better security
+# Create non-root user (good security practice)
 RUN useradd -m appuser && chown -R appuser:appuser /app
 USER appuser
 
-# Copy published output from build stage
+# Copy published output
 COPY --from=build /app/publish .
 
-# Expose the listening port (adjust as necessary)
-EXPOSE 80
+# Expose the actual port the application listens on
+EXPOSE 5035
 
-# Set environment variables for ASP.NET Core runtime
-ENV ASPNETCORE_URLS=http://+:80 \
+# Set ASP.NET Core environment variables
+ENV ASPNETCORE_URLS=http://+:5035 \
     ASPNETCORE_ENVIRONMENT=Production
 
-# Set entrypoint to run the application dll
+# Entry point
 ENTRYPOINT ["dotnet", "DotNetMongoCRUDApp.dll"]
-
