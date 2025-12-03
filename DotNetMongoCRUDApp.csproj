@@ -1,4 +1,12 @@
-<ItemGroup>
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
     <PackageReference Include="Bootstrap" Version="5.3.3" />
     <PackageReference Include="jQuery" Version="3.7.1" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.2" />
@@ -11,6 +19,8 @@
     <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.9.0" />
     <PackageReference Include="OpenTelemetry.Instrumentation.Runtime" Version="1.9.0" />
 
-    <!-- Correct Prometheus Exporter version (latest available) -->
+    <!-- Correct Prometheus Exporter -->
     <PackageReference Include="OpenTelemetry.Exporter.PrometheusHttpListener" Version="1.7.0" />
-</ItemGroup>
+  </ItemGroup>
+
+</Project>
