@@ -8,12 +8,12 @@ metadata:
   annotations:
     prometheus.io/scrape: "true"
     prometheus.io/path: "/metrics"
-    prometheus.io/port: "80"
+    prometheus.io/port: "5035"
 spec:
   selector:
     app: dotnetmongocrudapp
   ports:
   - protocol: TCP
-    port: 80
-    targetPort: 80
+    port: 80          # Cluster IP port (external service port)
+    targetPort: 5035  # The REAL port inside your container
   type: ClusterIP
