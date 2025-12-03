@@ -7,11 +7,9 @@ pipeline {
         DOCKERHUB_CRED = 'docker-cred'
         DOCKER_USER = 'charansait372'
         SONAR_TOKEN = credentials('sonar-token')
-        SONAR_HOST_URL = 'http://104.211.242.24:9000'
     }
 
     stages {
-
         stage('Git Checkout') {
             steps {
                 git branch: 'main', url: 'https://github.com/CharanSai8127/dotnet-3tier-app.git'
@@ -77,8 +75,7 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: "${DOCKERHUB_CRED}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     sh '''
                     docker login -u "$DOCKER_USER" -p "$DOCKER_PASS"
-                    docker build -t ${DOCKER_USER}/dotnet-proj:v2 .
-                    docker tag ${DOCKER_USER}/dotnet-proj:v2 ${DOCKER_USER}/dotnet-proj:latest
+                    docker build -t ${DOCKER_USER}/dotnet-proj:v3 .
                     '''
                 }
             }
@@ -87,7 +84,7 @@ pipeline {
         stage('Trivy Scan Image') {
             steps {
                 sh '''
-                trivy image ${DOCKER_USER}/dotnet-proj:v2 --exit-code 0 --severity HIGH,CRITICAL --format table > trivy-image-report.txt
+                trivy image ${DOCKER_USER}/dotnet-proj:v3 --exit-code 0 --severity HIGH,CRITICAL --format table > trivy-image-report.txt
                 '''
             }
         }
@@ -97,8 +94,7 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: "${DOCKERHUB_CRED}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     sh '''
                     docker login -u "$DOCKER_USER" -p "$DOCKER_PASS"
-                    docker push ${DOCKER_USER}/dotnet-proj:v2
-                    docker push ${DOCKER_USER}/dotnet-proj:latest
+                    docker push ${DOCKER_USER}/dotnet-proj:v3
                     '''
                 }
             }
