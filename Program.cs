@@ -20,8 +20,9 @@ builder.Services.AddSingleton<IMongoDBSettings>(sp =>
 builder.Services.AddSingleton<ProductService>();
 
 
+//  ------------------------------
 //  OpenTelemetry Metrics Pipeline
-
+//  ------------------------------
 builder.Services.AddOpenTelemetry()
     .ConfigureResource(resource =>
         resource.AddService("dotnetmongocrudapp"))
@@ -30,7 +31,9 @@ builder.Services.AddOpenTelemetry()
         metrics.AddAspNetCoreInstrumentation();
         metrics.AddHttpClientInstrumentation();
         metrics.AddRuntimeInstrumentation();
-        metrics.AddPrometheusExporter();
+
+        // ✅ NEW: Correct Prometheus Exporter for .NET 8
+        metrics.AddPrometheusHttpListener();
     });
 
 var app = builder.Build();
@@ -41,7 +44,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-// Expose app on port 5035 (same as your original)
+// Expose app on port 5035
 app.Urls.Add("http://0.0.0.0:5035");
 
 app.UseHttpsRedirection();
@@ -51,10 +54,10 @@ app.UseRouting();
 
 app.UseAuthorization();
 
-
+// ------------------------------
 // Prometheus Scrape Endpoint
+// ------------------------------
 app.MapPrometheusScrapingEndpoint("/metrics");
-// IMPORTANT: This replaces prometheus-net MapMetrics
 
 app.MapControllerRoute(
     name: "default",
