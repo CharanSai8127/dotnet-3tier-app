@@ -14,16 +14,20 @@ spec:
     metadata:
       labels:
         app: dotnetmongocrudapp
+      annotations:                        #  Prometheus auto-discovery
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "5035"
+        prometheus.io/path: "/metrics"
     spec:
       serviceAccountName: dotnet-sa
       containers:
       - name: dotnetmongocrudapp
-        image: charansait372/dotnet-proj:v2
+        image: charansait372/dotnet-proj:v3
         ports:
-        - containerPort: 80
+        - containerPort: 5035              #  Matches app + Dockerfile
         env:
         - name: ASPNETCORE_URLS
-          value: "http://+:80"
+          value: "http://+:5035"           #  Matches Program.cs
         - name: ASPNETCORE_ENVIRONMENT
           value: "Production"
         - name: ConnectionStrings__CoreDB
@@ -31,3 +35,9 @@ spec:
             secretKeyRef:
               name: sql-connection
               key: connectionString
+        readinessProbe:                      #  Health check via metrics
+          httpGet:
+            path: /metrics
+            port: 5035
+          initialDelaySeconds: 10
+          periodSeconds: 10
