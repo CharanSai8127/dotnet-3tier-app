@@ -1,7 +1,9 @@
 using Microsoft.Extensions.Options;
 using DotNetMongoCRUDApp.Models;
 using DotNetMongoCRUDApp.Services;
-using Prometheus;  // <-- REQUIRED for Prometheus
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +19,20 @@ builder.Services.AddSingleton<IMongoDBSettings>(sp =>
 
 builder.Services.AddSingleton<ProductService>();
 
+
+//  OpenTelemetry Metrics Pipeline
+
+builder.Services.AddOpenTelemetry()
+    .ConfigureResource(resource =>
+        resource.AddService("dotnetmongocrudapp"))
+    .WithMetrics(metrics =>
+    {
+        metrics.AddAspNetCoreInstrumentation();
+        metrics.AddHttpClientInstrumentation();
+        metrics.AddRuntimeInstrumentation();
+        metrics.AddPrometheusExporter();
+    });
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
@@ -25,7 +41,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-// Listen on port 5035
+// Expose app on port 5035 (same as your original)
 app.Urls.Add("http://0.0.0.0:5035");
 
 app.UseHttpsRedirection();
@@ -33,13 +49,12 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-// --------------------------------------
-// 🔥 PROMETHEUS MIDDLEWARE (CORRECT ORDER)
-// --------------------------------------
-app.UseHttpMetrics();        // Must be BEFORE endpoints
-app.MapMetrics("/metrics");  // Exposes metrics endpoint
-
 app.UseAuthorization();
+
+
+// Prometheus Scrape Endpoint
+app.MapPrometheusScrapingEndpoint("/metrics");
+// IMPORTANT: This replaces prometheus-net MapMetrics
 
 app.MapControllerRoute(
     name: "default",
