@@ -5,7 +5,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
+builder.Services.AddDbContext<ApplicationDbContext, DotNetMongoCRUDApp.Data>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("CoreDB")));
 
 var app = builder.Build();

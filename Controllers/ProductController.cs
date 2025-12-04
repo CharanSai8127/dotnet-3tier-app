@@ -1,93 +1,50 @@
-
 using Microsoft.AspNetCore.Mvc;
 using DotNetMongoCRUDApp.Models;
-using DotNetMongoCRUDApp.Services;
+using DotNetMongoCRUDApp.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace DotNetMongoCRUDApp.Controllers
 {
     public class ProductController : Controller
     {
-        private readonly ProductService _productService;
-
-        public ProductController(ProductService productService)
+        private readonly ApplicationDbContext _context;
+        public ProductController(ApplicationDbContext context) { _context = context; }
+        
+        public async Task<IActionResult> Index() => View(await _context.Products.ToListAsync());
+        public IActionResult Create() => View();
+        
+        [HttpPost] public async Task<IActionResult> Create(Product product)
         {
-            _productService = productService;
-        }
-
-        public IActionResult Index()
-        {
-            var products = _productService.GetAllProducts();
-            return View(products);
-        }
-
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        public IActionResult Create(Product product)
-        {
-            if (ModelState.IsValid)
-            {
-                _productService.CreateProduct(product);
-                return RedirectToAction(nameof(Index));
-            }
+            if (ModelState.IsValid) { _context.Add(product); await _context.SaveChangesAsync(); return RedirectToAction(nameof(Index)); }
             return View(product);
         }
-
-        public IActionResult Edit(string id)
+        
+        public async Task<IActionResult> Edit(int? id)
         {
-            var product = _productService.GetProductById(id);
-            if (product == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
+            var product = await _context.Products.FindAsync(id);
+            return product == null ? NotFound() : View(product);
+        }
+        
+        [HttpPost] public async Task<IActionResult> Edit(int id, Product product)
+        {
+            if (id != product.Id) return BadRequest();
+            if (ModelState.IsValid) { _context.Update(product); await _context.SaveChangesAsync(); return RedirectToAction(nameof(Index)); }
             return View(product);
         }
-
-        [HttpPost]
-        public IActionResult Edit(string id, Product product)
+        
+        public async Task<IActionResult> Delete(int? id)
         {
-            if (id != product.Id)
-            {
-                return BadRequest();
-            }
-
-            if (ModelState.IsValid)
-            {
-                _productService.UpdateProduct(id, product);
-                return RedirectToAction(nameof(Index));
-            }
-            return View(product);
+            if (id == null) return NotFound();
+            var product = await _context.Products.FindAsync(id);
+            return product == null ? NotFound() : View(product);
         }
-
-        public IActionResult Delete(string id)
+        
+        [HttpPost, ActionName("Delete")] public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var product = _productService.GetProductById(id);
-            if (product == null)
-            {
-                return NotFound();
-            }
-            return View(product);
-        }
-
-        [HttpPost, ActionName("Delete")]
-        public IActionResult DeleteConfirmed(string id)
-        {
-            _productService.DeleteProduct(id);
+            var product = await _context.Products.FindAsync(id);
+            if (product != null) { _context.Products.Remove(product); await _context.SaveChangesAsync(); }
             return RedirectToAction(nameof(Index));
-        }
-
-        public IActionResult Details(string id)
-        {
-            var product = _productService.GetProductById(id);
-            if (product == null)
-            {
-                return NotFound();
-            }
-            return View(product);
         }
     }
 }
-
