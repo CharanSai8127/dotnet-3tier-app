@@ -38,16 +38,16 @@ pipeline {
             steps {
                 withSonarQubeEnv("${SONAR_ENV}") {
                     sh '''
-                    dotnet-sonarscanner begin \
+                    dotnet sonarscanner begin \
                         /k:"DotNetMongoCRUDApp" \
                         /d:sonar.host.url="${SONAR_HOST_URL}" \
                         /d:sonar.login="${SONAR_TOKEN}" \
                         /d:sonar.cs.vscoveragexml.reportsPaths="**/coverage.cobertura.xml"
-
+                    
                     dotnet build
                     dotnet test --collect:"XPlat Code Coverage"
-
-                    dotnet-sonarscanner end /d:sonar.login="${SONAR_TOKEN}"
+                    
+                    dotnet sonarscanner end /d:sonar.login="${SONAR_TOKEN}"
                     '''
                 }
             }
@@ -75,7 +75,7 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: "${DOCKERHUB_CRED}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     sh '''
                     docker login -u "$DOCKER_USER" -p "$DOCKER_PASS"
-                    docker build -t ${DOCKER_USER}/dotnet-proj:v3 .
+                    docker build -t ${DOCKER_USER}/dotnet-proj:v4 .
                     '''
                 }
             }
@@ -84,7 +84,7 @@ pipeline {
         stage('Trivy Scan Image') {
             steps {
                 sh '''
-                trivy image ${DOCKER_USER}/dotnet-proj:v3 --exit-code 0 --severity HIGH,CRITICAL --format table > trivy-image-report.txt
+                trivy image ${DOCKER_USER}/dotnet-proj:v4 --exit-code 0 --severity HIGH,CRITICAL --format table > trivy-image-report.txt
                 '''
             }
         }
@@ -94,12 +94,12 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: "${DOCKERHUB_CRED}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     sh '''
                     docker login -u "$DOCKER_USER" -p "$DOCKER_PASS"
-                    docker push ${DOCKER_USER}/dotnet-proj:v3
+                    docker push ${DOCKER_USER}/dotnet-proj:v4
                     '''
                 }
             }
         }
-    }   
+    }
 
     post {
         always {
@@ -108,3 +108,4 @@ pipeline {
         }
     }
 }
+
