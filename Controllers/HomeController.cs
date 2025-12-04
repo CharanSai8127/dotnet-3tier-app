@@ -1,8 +1,8 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using DotNetMongoCRUDApp.Models;
+using DotNetSqlCRUDApp.Models;
 
-namespace DotNetMongoCRUDApp.Controllers;
+namespace DotNetSqlCRUDApp.Controllers;
 
 public class HomeController : Controller
 {

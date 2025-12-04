@@ -3,12 +3,12 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
 # Copy project file first (enables better layer caching)
-COPY ["DotNetMongoCRUDApp.csproj", "./"]
-RUN dotnet restore "DotNetMongoCRUDApp.csproj"
+COPY ["DotNetSqlCRUDApp.csproj", "./"]
+RUN dotnet restore "DotNetSqlCRUDApp.csproj"
 
 # Copy the remaining source and publish
 COPY . .
-RUN dotnet publish "DotNetMongoCRUDApp.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "DotNetSqlCRUDApp.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 # Stage 2: Runtime image
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
@@ -29,4 +29,5 @@ ENV ASPNETCORE_URLS=http://+:5035 \
     ASPNETCORE_ENVIRONMENT=Production
 
 # Entry point
-ENTRYPOINT ["dotnet", "DotNetMongoCRUDApp.dll"]
+ENTRYPOINT ["dotnet", "DotNetSqlCRUDApp.dll"]
+

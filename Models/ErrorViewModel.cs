@@ -1,4 +1,4 @@
-namespace DotNetMongoCRUDApp.Models;
+namespace DotNetSqlCRUDApp.Models;
 
 public class ErrorViewModel
 {

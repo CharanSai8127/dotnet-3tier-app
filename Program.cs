@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Prometheus;
-using DotNetMongoCRUDApp.Data;
+using DotNetSqlCRUDApp.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 

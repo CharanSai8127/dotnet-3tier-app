@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using DotNetMongoCRUDApp.Models;
+using DotNetSqlCRUDApp.Models;
 
-namespace DotNetMongoCRUDApp.Data
+namespace DotNetSqlCRUDApp.Data
 {
     public class ApplicationDbContext : DbContext
     {

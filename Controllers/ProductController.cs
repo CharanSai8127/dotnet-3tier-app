@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
-using DotNetMongoCRUDApp.Models;
-using DotNetMongoCRUDApp.Data;
+using DotNetSqlCRUDApp.Models;
+using DotNetSqlCRUDApp.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace DotNetMongoCRUDApp.Controllers
+namespace DotNetSqlCRUDApp.Controllers
 {
     public class ProductController : Controller
     {
