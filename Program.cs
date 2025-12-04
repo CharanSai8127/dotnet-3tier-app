@@ -1,31 +1,12 @@
-using Microsoft.Extensions.Options;
-using DotNetMongoCRUDApp.Models;
-using DotNetMongoCRUDApp.Services;
-using OpenTelemetry.Metrics;
-using OpenTelemetry.Resources;
-using OpenTelemetry.Trace;
+using Microsoft.EntityFrameworkCore;
+using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
-builder.Services.Configure<MongoDBSettings>(builder.Configuration.GetSection(nameof(MongoDBSettings)));
-builder.Services.AddSingleton<IMongoDBSettings>(sp => sp.GetRequiredService<IOptions<MongoDBSettings>>().Value);
-builder.Services.AddSingleton<ProductService>();
 
-builder.Services.AddOpenTelemetry()
-    .ConfigureResource(resource => resource.AddService("dotnetmongocrudapp"))
-    .WithTracing(tracing => 
-    {
-        tracing.AddAspNetCoreInstrumentation()
-               .AddHttpClientInstrumentation();
-    })
-    .WithMetrics(metrics =>
-    {
-        metrics.AddAspNetCoreInstrumentation()
-               .AddHttpClientInstrumentation()
-               .AddRuntimeInstrumentation()
-               .AddPrometheusExporter();  //  Stable exporter method
-    });
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("CoreDB")));
 
 var app = builder.Build();
 
@@ -41,6 +22,14 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthorization();
 
-app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
+app.UseMetricServer();
+app.UseHttpMetrics();
 
-app.Run();  // Prometheus metrics auto-exposed at /metrics
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.MapMetrics("/metrics");
+
+app.Run();
+
