@@ -1,19 +1,19 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: dotnet-app
+  name: platform-gateway
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "2"
+    argocd.argoproj.io/sync-wave: "1"
 spec:
   project: default
   source:
     repoURL: https://github.com/CharanSai8127/dotnet-3tier-app.git
     targetRevision: main
-    path: apps/dotnet-app
+    path: platform-config/gateway
   destination:
     server: https://kubernetes.default.svc
-    namespace: default
+    namespace: nginx-gateway
   syncPolicy:
     automated:
       prune: true

@@ -10,7 +10,7 @@ spec:
   source:
     repoURL: https://github.com/CharanSai8127/dotnet-3tier-app.git
     targetRevision: main
-    path: apps/dotnet-app
+    path: dotnet-app   
   destination:
     server: https://kubernetes.default.svc
     namespace: default
