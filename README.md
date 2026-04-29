@@ -1,173 +1,276 @@
-# 3-Tier .NET & MongoDB Application
+# 🚀 Autonomous GitOps Delivery Platform on AKS  
+## Event-Driven CI/CD with Image Automation, External Secrets, and Cloud Integration  
 
-This project is a 3-tier web application built with .NET and MongoDB. The application consists of a presentation layer, a business logic layer, and a data access layer. MongoDB is used as the database to store and manage application data.
+---
 
-## Table of Contents
+## 🧩 Overview  
 
-- [Prerequisites](#prerequisites)
-- [Installation](#installation)
-  - [1. Installing .NET SDK and Runtime](#1-installing-net-sdk-and-runtime)
-  - [2. Installing MongoDB](#2-installing-mongodb)
-  - [3. Setting Up MongoDB](#3-setting-up-mongodb)
-- [Running the Application](#running-the-application)
-- [Using MongoDB Shell](#using-mongodb-shell)
-- [License](#license)
+This project demonstrates a **fully automated, event-driven GitOps delivery platform** deployed on Azure Kubernetes Service (AKS).
 
-## Prerequisites
+It evolves the system into a **self-operating platform** by eliminating manual intervention in the deployment pipeline and introducing **externalized secret management and cloud-agnostic design**.
 
-Before setting up the project, ensure you have the following installed on your machine:
+---
 
-- Ubuntu (or another compatible Linux distribution)
-- [.NET SDK 8.0](https://dotnet.microsoft.com/download/dotnet/8.0) 
-- [MongoDB 7.0](https://www.mongodb.com/try/download/community) 
+## 🎯 Objectives  
 
-## Installation
+- Eliminate manual updates in deployment workflows  
+- Enable **automated image promotion and deployment**  
+- Externalize secret management outside the cluster  
+- Introduce **event-driven delivery flow**  
+- Extend platform across **multi-cloud environments**  
+- Strengthen **network and security boundaries**  
 
-### 1. Installing .NET SDK and Runtime
+---
 
-To install the .NET SDK and Runtime, execute the following commands in your terminal:
+## 🏗️ Architecture  
 
-1. **Install .NET SDK 8.0:**
+The system is structured into layers separating **automation, security, and runtime execution**:
 
-   ```bash
-   sudo apt-get update && \
-   sudo apt-get install -y dotnet-sdk-8.0
-   ```
+---
 
-2. **Install .NET Runtime 8.0:**
+### 🔹 CI Layer (Build & Artifact Generation)
 
-   ```bash
-   sudo apt-get update && \
-   sudo apt-get install -y aspnetcore-runtime-8.0
-   ```
+Handles application build and artifact creation:
 
-### 2. Installing MongoDB
+- CI pipeline builds application  
+- Docker image created and pushed to registry  
 
-To install MongoDB, execute the following commands in your terminal:
+👉 Produces **deployable artifacts**
 
-1. **Add MongoDB's GPG key and repository:**
+---
 
-   ```bash
-   curl -fsSL https://www.mongodb.org/static/pgp/server-7.0.asc | \
-   sudo gpg -o /usr/share/keyrings/mongodb-server-7.0.gpg \
-   --dearmor
-   ```
+### 🔹 Automation Layer (Image Promotion)
 
-   ```bash
-   echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list
-   ```
+- Argo CD Image Updater monitors registry  
+- Detects new image versions  
+- Updates Git manifests automatically  
 
-2. **Install MongoDB:**
+👉 Enables **fully automated deployment trigger**
 
-   ```bash
-   sudo apt update
-   sudo apt install -y mongodb-org
-   ```
+---
 
-3. **Enable and Start MongoDB service:**
+### 🔹 CD Layer (GitOps Control Plane)
 
-   ```bash
-   sudo systemctl enable mongod
-   sudo systemctl start mongod
-   ```
+- Argo CD continuously reconciles cluster state  
+- Git remains the source of truth  
 
-### 3. Setting Up MongoDB
+👉 Ensures **consistent and declarative deployments**
 
-1. **Install MongoDB Shell:**
+---
 
-   Follow the installation guide at [MongoDB Shell Installation](https://www.mongodb.com/docs/mongodb-shell/install/).
+### 🔹 Platform Layer  
 
-2. **Access MongoDB Terminal:**
+Provides operational capabilities:
 
-   To interact with your MongoDB instance, open the MongoDB shell using:
+- Argo CD  
+- External Secrets Operator  
+- Azure Key Vault  
+- Ingress / Gateway  
 
-   ```bash
-   mongosh
-   ```
+👉 Defines **cluster behavior and integrations**
 
-3. **Manipulate Databases and Collections:**
+---
 
-   - Show databases:
+### 🔹 Application Layer  
 
-     ```bash
-     show dbs;
-     ```
+- Backend / application workloads  
+- Database services  
 
-   - Use a specific database:
+👉 Represents **runtime workloads**
 
-     ```bash
-     use db_name;
-     ```
+---
 
-   - Show collections in the database:
+### 🔹 Cloud Integration Layer (Azure)
 
-     ```bash
-     show collections;
-     ```
+- Azure Kubernetes Service (AKS)  
+- Azure Key Vault (secret storage)  
+- Azure networking (private endpoints)  
 
-   - Query the `Products` collection:
+👉 Enables **secure and cloud-native operations**
 
-     ```bash
-     db.Products.find().pretty();
-     ```
+---
 
-## Running the Application
+## 🧭 Architecture Diagrams  
 
-To run the .NET application:
+### 🔹 CI Pipeline  
 
-1. **Navigate to the root directory where `Program.cs` is located.**
+![CI Architecture](./docs/ci-architecture.png)
 
-2. **Build the application:**
+**Flow:**
+- Code pushed to repository  
+- CI pipeline builds application  
+- Docker image pushed to registry  
 
-   ```bash
-   dotnet build
-   ```
+👉 Ensures **artifact generation**
 
-3. **Run the application:**
+---
 
-   ```bash
-   dotnet run
-   ```
+### 🔹 CD / Autonomous GitOps Flow  
 
-   The application will start, and you can access it in your web browser.
+![CD Architecture](./docs/cd-architecture.png)
 
-## Using MongoDB Shell
+**Flow:**
+- New image pushed to registry  
+- Image Updater detects change  
+- Git manifests updated automatically  
+- Argo CD syncs cluster  
+- Application updated in AKS  
+- External Secrets fetch secrets from Key Vault  
 
-To manipulate your MongoDB database using MongoDB Shell:
+👉 Enables **fully automated and self-updating system**
 
-1. **Start the shell:**
+---
 
-   ```bash
-   mongosh
-   ```
+> This architecture introduces an **event-driven delivery loop**, removing manual intervention between CI and CD.
 
-2. **Example commands:**
+---
 
-   - **List all databases:**
+## 📁 Repository Structure  
 
-     ```bash
-     show dbs;
-     ```
+---
 
-   - **Switch to a specific database:**
+### 🔹 Argo CD  
 
-     ```bash
-     use db_name;
-     ```
+`argocd/`
 
-   - **Show collections in the current database:**
+- App-of-apps configuration  
+- Platform and workload definitions  
 
-     ```bash
-     show collections;
-     ```
+👉 Controls **deployment orchestration**
 
-   - **Find all documents in a collection:**
+---
 
-     ```bash
-     db.Products.find().pretty();
-     ```
+### 🔹 Kubernetes Manifests  
 
-## License
+`k8s/`
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+- Application deployments  
+- Services and configs  
 
+---
+
+### 🔹 External Secrets  
+
+`external-secrets/`
+
+- Secret definitions mapped to Azure Key Vault  
+
+👉 Enables **secure secret injection**
+
+---
+
+## 🔁 System Flow  
+
+### Flow Explanation:
+
+1. Developer pushes code  
+2. CI pipeline builds and pushes image  
+3. Image registry receives new version  
+4. Argo CD Image Updater detects new image  
+5. Git manifests updated automatically  
+6. Argo CD syncs cluster state  
+7. Application deployed to AKS  
+8. External Secrets fetch secrets from Key Vault  
+9. Application becomes available  
+
+---
+
+## 🎛️ Control Model  
+
+| Layer | Responsibility |
+|------|---------------|
+| **Git** | Source of truth |
+| **CI Pipeline** | Artifact generation |
+| **Image Updater** | Automated manifest updates |
+| **Argo CD** | Continuous reconciliation |
+| **Kubernetes** | Runtime enforcement |
+| **External Secrets** | Secure secret access |
+| **Azure Services** | Infrastructure, networking, and security |
+
+---
+
+## ⚙️ Runtime Behavior  
+
+---
+
+### 🔹 Deployment Behavior  
+
+- New image automatically triggers deployment  
+- No manual Git updates required  
+- Argo CD reconciles state continuously  
+
+👉 Ensures **autonomous delivery**
+
+---
+
+### 🔹 Secret Management Behavior  
+
+- Secrets stored in Azure Key Vault  
+- External Secrets Operator fetches secrets  
+- Injected into pods dynamically  
+
+👉 Ensures **no secrets stored in cluster or Git**
+
+---
+
+### 🔹 Failure Handling  
+
+- If deployment fails → Argo CD reflects unhealthy state  
+- System can be rolled back via Git  
+
+👉 Ensures **controlled recovery**
+
+---
+
+### 🔹 Automation Behavior  
+
+- Registry changes drive deployment  
+- No manual intervention required  
+
+👉 Enables **event-driven system**
+
+---
+
+### 🔹 Scaling Behavior  
+
+- HPA scales workloads based on metrics  
+- Works independently of deployment flow  
+
+👉 Ensures **availability under load**
+
+---
+
+## 📊 Observability  
+
+- Metrics collected via Prometheus  
+- Logs handled via cloud logging services  
+
+Enables:
+- System monitoring  
+- Performance tracking  
+- Failure detection  
+
+---
+
+## ⚖️ Design Trade-offs & Future Enhancements  
+
+- Image automation adds complexity in debugging  
+- External secrets require additional operators  
+- Event-driven flow reduces control visibility  
+- Multi-cloud adds operational overhead  
+
+Future improvements:
+
+- Add progressive delivery (canary deployments)  
+- Improve observability integration  
+- Introduce policy enforcement (OPA/Gatekeeper)  
+
+---
+
+## 💬 Summary  
+
+This project transforms the platform into a **fully autonomous delivery system**, where deployments are triggered automatically based on image updates and secrets are managed externally.
+
+It demonstrates how **automation, externalized security, and cloud integration** can create a self-operating and scalable platform.
+
+> The system is designed using a **Solution → Control → Behavior model**, enabling automation, security, and operational independence.
